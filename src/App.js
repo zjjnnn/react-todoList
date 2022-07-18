@@ -1,73 +1,98 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import axios from "axios";
 
 import TodoList from "./components/todo-list/todoList.component";
 import "./App.css";
 
+const todoUrl = axios.create({
+  baseURL: "http://localhost:8080/todo",
+});
+
 const App = () => {
   const [todoList, setTodoList] = useState([]);
-  const [todoText, setTodoText] = useState("");
-  const [month, setMonth] = useState("");
-  const [day, setDay] = useState("");
 
-  const addText = (event) => {
-    // console.log("value", event.target.value);
-    const newTodo = event.target.value;
-    setTodoText(newTodo);
-  };
+  const todoText = useRef("");
+  const year = useRef("");
+  const month = useRef("");
+  const day = useRef("");
 
-  const addMonth = (event) => {
-    const newMonth = event.target.value + "";
-    setMonth(newMonth);
-  };
-  const addDay = (event) => {
-    const newDay = event.target.value + "";
-    setDay(newDay);
-  };
+  // const id = useRef(0);
 
-  const addItem = () => {
-    if (todoText === "" || month === "" || day === "") {
-      alert("请输入内容");
-    } else {
-      const newTodoItem = {
-        todoText: todoText,
-        time: month + "/" + day,
-        id: todoList.length + 1,
-      };
-      const list = [...todoList];
-      list.push(newTodoItem);
-      setTodoList(list);
+  useEffect(() => {
+    async function getTodoList() {
+      const response = await todoUrl.get("");
+      setTodoList(response.data.data);
+      console.log("response", response);
     }
-  };
+    getTodoList();
+  }, []);
 
+  // useEffect(() => {
+  //   id.current = id.current + 1;
+  // });
+
+  function addTask() {
+    axios
+      .post("http://localhost:8080/todo", {
+        task: todoText.current.value,
+        date:
+          year.current.value +
+          "-" +
+          month.current.value +
+          "-" +
+          day.current.value,
+        taskId: 0,
+      })
+      .then((response) => {
+        setTodoList(response.data.data);
+      });
+
+    todoText.current.value = "";
+    year.current.value = "";
+    month.current.value = "";
+    day.current.value = "";
+  }
+
+  // console.log("render");
   return (
     <div className="App">
       <h1 className="app-title">Todo List</h1>
       <div>
-        <span>Add a todo</span>
+        <span className="add-todo">Add a todo</span>
         <input
           name="todoText"
           type="text"
           maxLength="30"
           placeholder="E.g. Feed the cat"
-          onChange={addText}
+          ref={todoText}
         ></input>
         <input
+          className="input-date"
+          name="year"
+          placeholder="2022"
+          ref={year}
+          type="text"
+          maxLength="4"
+        ></input>
+        <input
+          className="input-date"
           name="month"
-          placeholder="m"
-          onChange={addMonth}
+          placeholder="01"
+          ref={month}
           type="text"
           maxLength="2"
         ></input>
         <input
+          className="input-date"
           name="day"
-          placeholder="d"
-          onChange={addDay}
+          placeholder="01"
+          ref={day}
           type="text"
           maxLength="2"
         ></input>
-        <button onClick={addItem}>Add</button>
+        <button onClick={addTask}>Add</button>
       </div>
-      <TodoList items={todoList} />
+      <TodoList items={todoList} setTodoList={setTodoList} />
     </div>
   );
 };

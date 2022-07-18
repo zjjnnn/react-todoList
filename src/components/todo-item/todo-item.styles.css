@@ -11,12 +11,17 @@
   align-items: center;
   justify-content: center;
 }
-
 .item-content p {
   margin-right: 10px;
   width: 250px;
   background-color: aliceblue;
 }
+
+/* .text {
+  margin-right: 10px;
+  width: 250px;
+  background-color: aliceblue;
+} */
 .item-content span {
   color: white;
 }

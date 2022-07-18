@@ -20,3 +20,13 @@ body {
   font-size: 76px;
   color: #0ccac4;
 }
+.input-date {
+  width: 10%;
+  margin: 0 2px;
+}
+
+.add-todo {
+  color: white;
+  font-weight: bold;
+  margin-right: 5px;
+}
